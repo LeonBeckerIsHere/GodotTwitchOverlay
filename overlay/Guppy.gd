@@ -12,11 +12,11 @@ var avatarType = str(randi_range(1,3))
 var idleName = "idle_" + avatarType
 var walkName = "walk_" + avatarType
 var expireName = "expire_" + avatarType
-var expirationTimer = 60.0
+var expirationTimer = 120.0
 var expired = false
 
 func keep_alive():
-	expirationTimer = 60.0
+	expirationTimer = 120.0
 
 func init(p_position:Vector2,p_username:String):
 	position = p_position

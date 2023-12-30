@@ -58,7 +58,7 @@ signal event(type, data)
 @export var chat_timeout_ms : int = 320
 
 ## Scopes to request for the token. Look at https://dev.twitch.tv/docs/authentication/scopes/ for a list of all available scopes.
-@export var scopes : Array[String] = ["chat:edit", "chat:read","moderator:read:chatters"]
+@export var scopes : Array[String] = ["chat:edit", "chat:read","moderator:read:chatters","moderation:read"]
 
 @export_category("Emotes/Badges")
 
@@ -718,6 +718,19 @@ func get_chatters() -> Array:
 	var response : Dictionary = JSON.parse_string(reply[3].get_string_from_utf8())
 	if (response.has("error")):
 		print("Failed to get list of chatters")
+		return Array()
+	else:
+		return response["data"]
+
+func get_moderators() -> Array:
+	var request : HTTPRequest = HTTPRequest.new()
+	add_child(request)
+	request.request("https://api.twitch.tv/helix/moderation/moderators?broadcaster_id="+user_id, [USER_AGENT, "Authorization: Bearer " + token["access_token"], "Client-Id:" + client_id, "Content-Type: application/json"], HTTPClient.METHOD_GET, "")
+	var reply : Array = await(request.request_completed)
+	request.queue_free()
+	var response : Dictionary = JSON.parse_string(reply[3].get_string_from_utf8())
+	if (response.has("error")):
+		print("Failed to get list of moderators")
 		return Array()
 	else:
 		return response["data"]

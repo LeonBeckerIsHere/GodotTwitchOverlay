@@ -2,6 +2,8 @@ extends Gift
 
 @export var guppy_scene:PackedScene
 @onready var root = get_node("/root/Overlay/Guppies")
+var moderators : Array[String] = []
+
 
 func _ready() -> void:
 	
@@ -39,6 +41,10 @@ func _ready() -> void:
 
 	# These two commands can be executed by everyone
 	add_command("helloworld", hello_world)
+	
+	var moderator_response:Array = await get_moderators()
+	for moderator in moderator_response:
+		moderators.append(moderator["user_name"])
 	
 	spawn_chatters()
 
@@ -83,9 +89,11 @@ func print_msg(stamp : String, data : SenderData, msg : String, badges : String)
 	
 func spawn_chatters():
 	var chatters:Array = await get_chatters()
-	print(chatters)
+	
 	for chatter in chatters:
-		upsert_chatter(chatter["user_name"])
+		var user_name = chatter["user_name"]
+		if(!moderators.has(user_name)):
+			upsert_chatter(chatter["user_name"])
 
 func upsert_chatter(user_name:String):
 	var userNode = get_node_or_null("/root/Overlay/Guppies/" + user_name)
